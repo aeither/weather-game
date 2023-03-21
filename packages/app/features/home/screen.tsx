@@ -1,32 +1,16 @@
-import {
-  Anchor,
-  Button,
-  H1,
-  H3,
-  Paragraph,
-  Separator,
-  XStack,
-  YStack,
-  Image,
-} from '@my/ui'
+import { Button, H1, H3, Image, Paragraph, Text, XStack, YStack } from '@my/ui'
+import useGO from 'app/hooks/use-go'
+import ky from 'ky'
 import React, { useEffect } from 'react'
 import { useLink } from 'solito/link'
 import { trpc } from '../../utils/trpc'
-import { SignedIn, SignedOut, useAuth } from '../../utils/clerk'
-import ky from 'ky'
 
 export function HomeScreen() {
-  const { signOut, userId } = useAuth()
   const userLinkProps = useLink({
     href: '/user/nate',
   })
-  const signInLinkProps = useLink({
-    href: '/signin',
-  })
-  const signUpLinkProps = useLink({
-    href: '/signup',
-  })
 
+  const { login, logout, walletAddress } = useGO()
   const { data, isLoading, error } = trpc.entry.all.useQuery()
 
   const fetchTest = async () => {
@@ -79,27 +63,16 @@ export function HomeScreen() {
         </Button>
       </XStack>
 
-      <SignedOut>
-        <XStack space ai="center">
-          <Button {...signInLinkProps} theme={'gray'}>
-            Sign In(Clerk)
-          </Button>
-          <Button {...signUpLinkProps} theme={'gray'}>
-            Sign Up(Clerk)
-          </Button>
-        </XStack>
-      </SignedOut>
+      <Text>{walletAddress || 'Connect'}</Text>
 
-      <SignedIn>
-        <Button
-          onPress={() => {
-            signOut()
-          }}
-          theme={'red'}
-        >
-          Sign Out
+      <XStack space ai="center">
+        <Button onPress={login} theme={'gray'}>
+          login
         </Button>
-      </SignedIn>
+        <Button onPress={logout} theme={'gray'}>
+          logout
+        </Button>
+      </XStack>
     </YStack>
   )
 }
