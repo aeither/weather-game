@@ -8,36 +8,38 @@ import {
   XStack,
   YStack,
   Image,
-} from "@my/ui";
-import React, { useEffect } from "react";
-import { useLink } from "solito/link";
-import { trpc } from "../../utils/trpc";
-import { SignedIn, SignedOut, useAuth } from "../../utils/clerk";
+} from '@my/ui'
+import React, { useEffect } from 'react'
+import { useLink } from 'solito/link'
+import { trpc } from '../../utils/trpc'
+import { SignedIn, SignedOut, useAuth } from '../../utils/clerk'
+import ky from 'ky'
 
 export function HomeScreen() {
-  const { signOut, userId } = useAuth();
+  const { signOut, userId } = useAuth()
   const userLinkProps = useLink({
-    href: "/user/nate",
-  });
+    href: '/user/nate',
+  })
   const signInLinkProps = useLink({
-    href: "/signin",
-  });
+    href: '/signin',
+  })
   const signUpLinkProps = useLink({
-    href: "/signup",
-  });
+    href: '/signup',
+  })
 
-  const { data, isLoading, error } = trpc.entry.all.useQuery();
+  const { data, isLoading, error } = trpc.entry.all.useQuery()
+
+  const fetchTest = async () => {
+    const json = await ky.get('https://relay.gelato.digital/oracles').json()
+    console.log('🚀 ~ file: screen.tsx:36 ~ fetchTest ~ json:', json)
+  }
 
   useEffect(() => {
-    console.log(data);
-  }, [isLoading]);
-  /* 
-  if (isLoading) {
-    return <Paragraph>Loading...</Paragraph>
-  } */
+    console.log(data)
+  }, [isLoading])
 
   if (error) {
-    return <Paragraph>{error.message}</Paragraph>;
+    return <Paragraph>{error.message}</Paragraph>
   }
 
   return (
@@ -55,33 +57,11 @@ export function HomeScreen() {
             create-universal-app
           </H1>
         </XStack>
-        <Paragraph ta="center">
-          This is a demo for create-universal-app. To read more about the
-          philosophy behind it, visit{" "}
-          <Anchor
-            color="$color12"
-            href="https://github.com/chen-rn/create-universal-app"
-            target="_blank"
-          >
-            https://github.com/chen-rn/create-universal-app
-          </Anchor>{" "}
-          (give it a ⭐️ if you like it!)
-        </Paragraph>
-        <Paragraph ta="center">
-          This template uses Expo, Next, Solito, tRPC, Tamagui, Clerk, and
-          Prisma. If you're a beginner and is a little overwhelmed, I've also
-          made a{" "}
-          <Anchor
-            color="$color12"
-            href="https://youtu.be/aTEv0-ZBbWk"
-            target="_blank"
-          >
-            video
-          </Anchor>{" "}
-          explanation on how this template works and how to get started!
-        </Paragraph>
-        <Separator />
       </YStack>
+
+      {/* START */}
+      <Button onPress={fetchTest}>Fetch</Button>
+      {/* END */}
 
       <H3 ta="center">Some Demos</H3>
       <YStack p="$2">
@@ -94,17 +74,17 @@ export function HomeScreen() {
       </YStack>
 
       <XStack space>
-        <Button {...userLinkProps} theme={"gray"}>
+        <Button {...userLinkProps} theme={'gray'}>
           User Page(Routing)
         </Button>
       </XStack>
 
       <SignedOut>
         <XStack space ai="center">
-          <Button {...signInLinkProps} theme={"gray"}>
+          <Button {...signInLinkProps} theme={'gray'}>
             Sign In(Clerk)
           </Button>
-          <Button {...signUpLinkProps} theme={"gray"}>
+          <Button {...signUpLinkProps} theme={'gray'}>
             Sign Up(Clerk)
           </Button>
         </XStack>
@@ -113,13 +93,13 @@ export function HomeScreen() {
       <SignedIn>
         <Button
           onPress={() => {
-            signOut();
+            signOut()
           }}
-          theme={"red"}
+          theme={'red'}
         >
           Sign Out
         </Button>
       </SignedIn>
     </YStack>
-  );
+  )
 }
