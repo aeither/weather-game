@@ -1,4 +1,9 @@
-import { GaslessOnboarding } from '@gelatonetwork/gasless-onboarding'
+import {
+  GaslessOnboarding,
+  GaslessWalletConfig,
+  GaslessWalletInterface,
+  LoginConfig,
+} from '@gelatonetwork/gasless-onboarding'
 import { GaslessWallet } from '@gelatonetwork/gasless-wallet'
 import { CONTRACT_ADDRESS, gaslessOnboarding } from 'app/lib/utils/constants'
 import { utils } from 'ethers'
@@ -19,7 +24,6 @@ export default function useGO() {
 
       setGOBMethod(gaslessOnboarding)
       setGaslessWallet(gaslessWallet)
-      console.log('🚀 ~ file: use-go.tsx:26 ~ login ~ gaslessWallet:', gaslessWallet)
       setWalletAddress(address)
     } catch (error) {
       console.log(error)
@@ -33,8 +37,9 @@ export default function useGO() {
   const contractAction = async () => {
     if (!gaslessWallet) return
     try {
-      let IContract = new utils.Interface('CONTRACT_ABI') // TODO
-      let txData = IContract.encodeFunctionData('actions', ['param1', 'param2'])
+      const CONTRACT_ABI = ['function store(uint256)']
+      let IContract = new utils.Interface(CONTRACT_ABI)
+      let txData = IContract.encodeFunctionData('store', [111])
 
       const { taskId } = await gaslessWallet.sponsorTransaction(CONTRACT_ADDRESS, txData)
 
@@ -44,11 +49,14 @@ export default function useGO() {
     }
   }
 
-  
+  // useEffect(() => {
+
+  // }, []);
 
   return {
     login,
     logout,
     walletAddress,
+    contractAction,
   }
 }
