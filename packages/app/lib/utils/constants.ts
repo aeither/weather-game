@@ -12,7 +12,7 @@ if (!process.env.NEXT_PUBLIC_1BALANCE_API_KEY)
   throw new Error('NEXT_PUBLIC_1BALANCE_API_KEY not found')
 const NEXT_PUBLIC_1BALANCE_API_KEY = process.env.NEXT_PUBLIC_1BALANCE_API_KEY
 
-export const CONTRACT_ADDRESS = ''
+export const CONTRACT_ADDRESS = '0x5CE7a9550Fb049E19a9AB02D6fE210624BEa9822'
 
 let origin
 if (typeof window !== 'undefined') {

@@ -1,17 +1,14 @@
 import {
   GaslessOnboarding,
-  GaslessWalletConfig,
   GaslessWalletInterface,
-  LoginConfig,
 } from '@gelatonetwork/gasless-onboarding'
 import { GaslessWallet } from '@gelatonetwork/gasless-wallet'
 import { CONTRACT_ADDRESS, gaslessOnboarding } from 'app/lib/utils/constants'
 import { utils } from 'ethers'
 import { useState } from 'react'
 
-export default function useGO() {
+export default function useGaslessOnboarding() {
   const [walletAddress, setWalletAddress] = useState<string>()
-  const [gobMethod, setGOBMethod] = useState<GaslessOnboarding>()
   const [gaslessWallet, setGaslessWallet] = useState<GaslessWallet>()
 
   const login = async () => {
@@ -19,10 +16,10 @@ export default function useGO() {
       await gaslessOnboarding.init()
       await gaslessOnboarding.login()
 
-      const gaslessWallet = gaslessOnboarding.getGaslessWallet()
+      const gaslessWallet: GaslessWalletInterface = gaslessOnboarding.getGaslessWallet()
+      if (!gaslessWallet.isInitiated()) await gaslessWallet.init()
       const address = gaslessWallet.getAddress()
 
-      setGOBMethod(gaslessOnboarding)
       setGaslessWallet(gaslessWallet)
       setWalletAddress(address)
     } catch (error) {
@@ -31,7 +28,10 @@ export default function useGO() {
   }
 
   const logout = async () => {
-    await gobMethod?.logout()
+    await gaslessOnboarding?.logout()
+
+    setGaslessWallet(undefined)
+    setWalletAddress(undefined)
   }
 
   const contractAction = async () => {
@@ -39,7 +39,11 @@ export default function useGO() {
     try {
       const CONTRACT_ABI = ['function store(uint256)']
       let IContract = new utils.Interface(CONTRACT_ABI)
-      let txData = IContract.encodeFunctionData('store', [111])
+      let txData = IContract.encodeFunctionData('store', [BigInt(111)])
+      console.log(
+        '🚀 ~ file: use-gasless-onboarding.tsx:43 ~ contractAction ~ txData:',
+        txData
+      )
 
       const { taskId } = await gaslessWallet.sponsorTransaction(CONTRACT_ADDRESS, txData)
 

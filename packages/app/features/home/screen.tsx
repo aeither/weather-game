@@ -1,5 +1,5 @@
 import { Button, H1, H3, Image, Paragraph, Text, XStack, YStack } from '@my/ui'
-import useGO from 'app/lib/hooks/use-go'
+import useGaslessOnboarding from 'app/lib/hooks/use-gasless-onboarding'
 import ky from 'ky'
 import React, { useEffect } from 'react'
 import { useLink } from 'solito/link'
@@ -10,7 +10,7 @@ export function HomeScreen() {
     href: '/user/nate',
   })
 
-  const { login, logout, walletAddress } = useGO()
+  const { login, logout, walletAddress, contractAction } = useGaslessOnboarding()
   const { data, isLoading, error } = trpc.entry.all.useQuery()
 
   const fetchTest = async () => {
@@ -45,6 +45,7 @@ export function HomeScreen() {
 
       {/* START */}
       <Button onPress={fetchTest}>Fetch</Button>
+      <Button onPress={contractAction}>action</Button>
       {/* END */}
 
       <H3 ta="center">Some Demos</H3>
