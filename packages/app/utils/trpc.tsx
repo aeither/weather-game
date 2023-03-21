@@ -13,7 +13,6 @@ import React from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { httpBatchLink } from '@trpc/client'
 import { transformer } from '@my/api/transformer'
-import { useAuth } from '@clerk/clerk-expo'
 
 /**
  * A set of typesafe hooks for consuming your API.
@@ -33,13 +32,12 @@ const getBaseUrl = () => {
    * will not be available in production.
    */
   if (!__DEV__) {
-    const productionApiUrl = Constants.manifest?.extra
-      ?.productionApiUrl as string;
+    const productionApiUrl = Constants.manifest?.extra?.productionApiUrl as string
     if (!productionApiUrl)
       throw new Error(
-        "failed to get productionApiUrl, missing in extra section of app.config.ts",
-      );
-    return productionApiUrl;
+        'failed to get productionApiUrl, missing in extra section of app.config.ts'
+      )
+    return productionApiUrl
   }
 
   const localhost = Constants.manifest?.debuggerHost?.split(':')[0]
@@ -50,7 +48,6 @@ const getBaseUrl = () => {
 export const TRPCProvider: React.FC<{
   children: React.ReactNode
 }> = ({ children }) => {
-  const { getToken } = useAuth()
   const [queryClient] = React.useState(() => new QueryClient())
   const [trpcClient] = React.useState(() =>
     trpc.createClient({
@@ -58,10 +55,7 @@ export const TRPCProvider: React.FC<{
       links: [
         httpBatchLink({
           async headers() {
-            const authToken = await getToken()
-            return {
-              Authorization: authToken,
-            }
+            return {}
           },
           url: `${getBaseUrl()}/api/trpc`,
         }),
