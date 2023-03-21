@@ -1,9 +1,9 @@
 import { Button, H1, H3, Image, Paragraph, Text, XStack, YStack } from '@my/ui'
-import useGO from 'app/hooks/use-go'
+import useGO from 'app/lib/hooks/use-go'
 import ky from 'ky'
 import React, { useEffect } from 'react'
 import { useLink } from 'solito/link'
-import { trpc } from '../../utils/trpc'
+import { trpc } from '../../lib/utils/trpc'
 
 export function HomeScreen() {
   const userLinkProps = useLink({

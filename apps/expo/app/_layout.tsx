@@ -1,6 +1,6 @@
 import 'expo-dev-client'
 import React from 'react'
-import { Provider } from 'app/provider'
+import { Provider } from 'app/lib/provider'
 import { useFonts } from 'expo-font'
 import {SplashScreen, Stack} from 'expo-router'
 

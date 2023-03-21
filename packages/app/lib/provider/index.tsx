@@ -1,4 +1,4 @@
-import config from '../tamagui.config'
+import config from '../../tamagui.config'
 import { TamaguiProvider, TamaguiProviderProps } from '@my/ui'
 import { TRPCProvider } from './trpc' //mobile only
 

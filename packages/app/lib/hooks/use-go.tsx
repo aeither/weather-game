@@ -1,6 +1,6 @@
 import { GaslessOnboarding } from '@gelatonetwork/gasless-onboarding'
 import { GaslessWallet } from '@gelatonetwork/gasless-wallet'
-import { CONTRACT_ADDRESS, gaslessOnboarding } from 'app/utils/constants'
+import { CONTRACT_ADDRESS, gaslessOnboarding } from 'app/lib/utils/constants'
 import { utils } from 'ethers'
 import { useState } from 'react'
 
@@ -43,6 +43,8 @@ export default function useGO() {
       console.log(error)
     }
   }
+
+  
 
   return {
     login,
