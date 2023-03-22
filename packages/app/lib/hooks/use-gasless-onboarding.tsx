@@ -46,23 +46,10 @@ export default function useGaslessOnboarding() {
       // let txData = IContract.encodeFunctionData('store', [BigInt(111)])
       // const { taskId } = await gaslessWallet.sponsorTransaction(CONTRACT_ADDRESS, txData)
 
-      // With ethers contract
-      const isDeployed = await gaslessWallet.isDeployed()
-      console.log(
-        '🚀 ~ file: use-gasless-onboarding.tsx:48 ~ contractAction ~ isDeployed:',
-        isDeployed
-      )
-
       const txData = await contract?.populateTransaction['store']?.(100)
-      console.log(
-        '🚀 ~ file: use-gasless-onboarding.tsx:56 ~ contractAction ~ txData:',
-        txData
-      )
       if (!txData?.data) return
       let tx = await gaslessWallet?.sponsorTransaction(CONTRACT_ADDRESS, txData?.data)
       console.log(`https://relay.gelato.digital/tasks/status/${tx?.taskId}`)
-
-      console.log('https://relay.gelato.digital/tasks/status/' + tx?.taskId)
     } catch (error) {
       console.log(error)
     }
