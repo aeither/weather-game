@@ -12,7 +12,8 @@ if (!process.env.NEXT_PUBLIC_1BALANCE_API_KEY)
   throw new Error('NEXT_PUBLIC_1BALANCE_API_KEY not found')
 const NEXT_PUBLIC_1BALANCE_API_KEY = process.env.NEXT_PUBLIC_1BALANCE_API_KEY
 
-export const CONTRACT_ADDRESS = '0x5CE7a9550Fb049E19a9AB02D6fE210624BEa9822'
+// export const CONTRACT_ADDRESS = '0x5CE7a9550Fb049E19a9AB02D6fE210624BEa9822' // goerli
+export const CONTRACT_ADDRESS = '0x23685Fcf721Da8D86c59D651db1E5251B0169446' //mumbai
 
 let origin
 if (typeof window !== 'undefined') {
@@ -22,7 +23,8 @@ if (typeof window !== 'undefined') {
 export const loginConfig: LoginConfig = {
   domains: [origin],
   chain: {
-    id: 5, // eth-goerli
+    // id: 5, // eth-goerli
+    id: 80001, // polygon-mumbai
     rpcUrl: NEXT_PUBLIC_RPC,
   },
   openLogin: {

@@ -2,7 +2,7 @@ import { GaslessWalletInterface } from '@gelatonetwork/gasless-onboarding'
 import { GaslessWallet } from '@gelatonetwork/gasless-wallet'
 import { SafeEventEmitterProvider } from '@web3auth/base'
 import { CONTRACT_ADDRESS, gaslessOnboarding, NFT_ABI } from 'app/lib/utils/constants'
-import { Contract, ethers } from 'ethers'
+import { Contract, ethers, utils } from 'ethers'
 import { useEffect, useState } from 'react'
 
 export default function useGaslessOnboarding() {
@@ -44,20 +44,20 @@ export default function useGaslessOnboarding() {
       // const CONTRACT_ABI = ['function store(uint256)']
       // let IContract = new utils.Interface(CONTRACT_ABI)
       // let txData = IContract.encodeFunctionData('store', [BigInt(111)])
-      // console.log(
-      //   '🚀 ~ file: use-gasless-onboarding.tsx:43 ~ contractAction ~ txData:',
-      //   txData
-      // )
-
       // const { taskId } = await gaslessWallet.sponsorTransaction(CONTRACT_ADDRESS, txData)
 
+      // With ethers contract
       const isDeployed = await gaslessWallet.isDeployed()
       console.log(
         '🚀 ~ file: use-gasless-onboarding.tsx:48 ~ contractAction ~ isDeployed:',
         isDeployed
       )
 
-      const txData = await contract?.populateTransaction['store']?.(123)
+      const txData = await contract?.populateTransaction['store']?.(100)
+      console.log(
+        '🚀 ~ file: use-gasless-onboarding.tsx:56 ~ contractAction ~ txData:',
+        txData
+      )
       if (!txData?.data) return
       let tx = await gaslessWallet?.sponsorTransaction(CONTRACT_ADDRESS, txData?.data)
       console.log(`https://relay.gelato.digital/tasks/status/${tx?.taskId}`)
