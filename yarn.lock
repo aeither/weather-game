@@ -4540,7 +4540,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@solana/buffer-layout@npm:^4.0.0":
+"@solana/buffer-layout@npm:^4.0.0, @solana/buffer-layout@npm:^4.0.1":
   version: 4.0.1
   resolution: "@solana/buffer-layout@npm:4.0.1"
   dependencies:
@@ -7843,6 +7843,7 @@ __metadata:
     "@gelatonetwork/gasless-onboarding": ^0.0.3
     "@gelatonetwork/web3-functions-sdk": ^0.4.8
     "@my/ui": "*"
+    "@solana/buffer-layout": ^4.0.1
     "@tamagui/animations-react-native": ^1.0.17
     "@tamagui/colors": ^1.0.17
     "@tamagui/font-inter": ^1.0.17
