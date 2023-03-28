@@ -9,10 +9,28 @@ export const PROVIDER_URL = process.env.PROVIDER_URL
 if (!process.env.PRIVATE_KEY) throw new Error('PRIVATE_KEY not found')
 export const PRIVATE_KEY = process.env.PRIVATE_KEY
 
+if (!process.env.MORALIS_API_TOKEN) throw new Error('MORALIS_API_TOKEN not found')
+const MORALIS_API_TOKEN = process.env.MORALIS_API_TOKEN
+
 export const entryRouter = router({
   all: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.entry.findMany()
   }),
+
+  allTokens: publicProcedure.query(({ ctx }) => {
+    const data = fetch(
+      'https://deep-index.moralis.io/api/v2/0x51e07f2835c8a53035C23Ab674eaE57BF1E21Fa2/erc20?chain=mumbai',
+      {
+        headers: {
+          Accept: 'application/json',
+          'X-Api-Key': MORALIS_API_TOKEN,
+        },
+      }
+    ).then((r) => r.json())
+
+    return data
+  }),
+
   createTask: publicProcedure
     // .input(
     //   z.object({90-[=9p0-[]]0[p-]

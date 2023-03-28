@@ -12,7 +12,6 @@ export default function useGaslessOnboarding() {
   const [web3AuthProvider, setWeb3AuthProvider] =
     useState<SafeEventEmitterProvider | null>(null)
   const [contract, setContract] = useState<Contract | null>(null)
-  const { mutateAsync } = trpc.entry.createTask.useMutation()
 
   const login = async () => {
     try {
@@ -57,19 +56,6 @@ export default function useGaslessOnboarding() {
     }
   }
 
-  const createTask = async () => {
-    console.log('createTask, gaslessWallet: ', !!gaslessWallet)
-
-    if (!gaslessWallet) return
-    const { taskId, tx } = await mutateAsync()
-    //
-    let sponsoredTx = await gaslessWallet?.sponsorTransaction(
-      '0xF8f476047EBF7335EF1181a6ad4A0D0B3c07c031',
-      tx.data
-    )
-    console.log(`https://relay.gelato.digital/tasks/status/${sponsoredTx.taskId}`)
-  }
-
   useEffect(() => {
     if (!web3AuthProvider) return
     const contract = new ethers.Contract(
@@ -86,6 +72,5 @@ export default function useGaslessOnboarding() {
     walletAddress,
     gaslessWallet,
     contractAction,
-    createTask,
   }
 }
