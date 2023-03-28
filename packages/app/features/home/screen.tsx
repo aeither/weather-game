@@ -1,5 +1,6 @@
-import { Button, H1, H3, Image, Paragraph, Text, XStack, YStack } from '@my/ui'
+import { Button, H1, H2, H3, Image, Paragraph, Text, XStack, YStack } from '@my/ui'
 import useGaslessOnboarding from 'app/lib/hooks/use-gasless-onboarding'
+import useSwapper, { TOKEN_A_ADDRESS } from 'app/lib/hooks/use-swapper'
 import ky from 'ky'
 import React, { useEffect } from 'react'
 import { useLink } from 'solito/link'
@@ -10,7 +11,10 @@ export function HomeScreen() {
     href: '/user/nate',
   })
 
-  const { login, logout, walletAddress, contractAction } = useGaslessOnboarding()
+  // const { createTask } = useW3F()
+  const { login, logout, walletAddress, contractAction, createTask, gaslessWallet } =
+    useGaslessOnboarding()
+  const { swap, approveToken, mintToken } = useSwapper(gaslessWallet)
   const { data, isLoading, error } = trpc.entry.all.useQuery()
 
   const fetchTest = async () => {
@@ -44,8 +48,12 @@ export function HomeScreen() {
       </YStack>
 
       {/* START */}
-      <Button onPress={fetchTest}>Fetch</Button>
-      <Button onPress={contractAction}>action</Button>
+      <Button onPress={fetchTest}>Fetch gelato oracles</Button>
+      <Button onPress={contractAction}>gasless remix store action</Button>
+      <Button onPress={createTask}>Create Task</Button>
+
+      <Button onPress={() => mintToken(TOKEN_A_ADDRESS)}>Approve</Button>
+      <Button onPress={() => approveToken(TOKEN_A_ADDRESS)}>Approve</Button>
       {/* END */}
 
       <H3 ta="center">Some Demos</H3>

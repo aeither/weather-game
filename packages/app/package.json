@@ -8,7 +8,9 @@
   ],
   "dependencies": {
     "@clerk/nextjs": "^4.6.15",
+    "@gelatonetwork/automate-sdk": "^2.3.0-beta",
     "@gelatonetwork/gasless-onboarding": "^0.0.3",
+    "@gelatonetwork/web3-functions-sdk": "^0.4.8",
     "@my/ui": "*",
     "@tamagui/animations-react-native": "^1.0.17",
     "@tamagui/colors": "^1.0.17",
@@ -23,6 +25,7 @@
     "expo-linking": "3.3.0",
     "ky": "^0.33.3",
     "solito": "2.1.3",
+    "wagmi": "^0.12.7",
     "zustand": "^4.3.6"
   }
 }
