@@ -6,7 +6,7 @@ import { polygonMumbai } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import React, { useState, useEffect } from 'react'
 
-const { chains, provider, webSocketProvider } = configureChains(
+const { provider, webSocketProvider } = configureChains(
   [mainnet, polygonMumbai],
   [publicProvider()]
 )

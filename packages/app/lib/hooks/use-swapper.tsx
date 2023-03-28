@@ -4,6 +4,7 @@ import { BigNumber, ethers, utils } from 'ethers'
 export const TOKEN_A_ADDRESS = '0xF15c5A73803716bA7312c84146621Da20F086cF1'
 export const TOKEN_B_ADDRESS = '0x002A1Ac1E59D616585a9Fc0913e5b06a9DbB9d6C'
 const SwapperAddress = '0x0CA03a3560A305fEd2803B336A6D5C8Ccff12891'
+const WeatherAddress = '0xF15c5A73803716bA7312c84146621Da20F086cF1'
 
 export default function useSwapper(gaslessWallet: GaslessWallet | undefined) {
   const swap = async (amount: number) => {
