@@ -14,8 +14,8 @@ function MyApp({ Component, pageProps }: SolitoAppProps) {
   return (
     <>
       <Head>
-        <title>Universal Example</title>
-        <meta name="description" content="Tamagui, Solito, Expo & Next.js" />
+        <title>Weather Forecaster Game</title>
+        <meta name="description" content="A game for predicting weather conditions." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <ThemeProvider>
