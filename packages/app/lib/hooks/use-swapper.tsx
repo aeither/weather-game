@@ -5,12 +5,33 @@ export const TOKEN_A_ADDRESS = '0xF15c5A73803716bA7312c84146621Da20F086cF1'
 export const TOKEN_B_ADDRESS = '0x002A1Ac1E59D616585a9Fc0913e5b06a9DbB9d6C'
 const SwapperAddress = '0x0CA03a3560A305fEd2803B336A6D5C8Ccff12891'
 const WeatherAddress = '0xF15c5A73803716bA7312c84146621Da20F086cF1'
+const WeatherAddress2 = '0x752504FCF6960F54e5b942caa530CB4Ac62E7768'
+
+type WeatherMain =
+  | 'Thunderstorm'
+  | 'Drizzle'
+  | 'Rain'
+  | 'Snow'
+  | 'Mist'
+  | 'Smoke'
+  | 'Haze'
+  | 'Dust'
+  | 'Fog'
+  | 'Sand'
+  | 'Ash'
+  | 'Squall'
+  | 'Tornado'
+  | 'Clear'
+  | 'Clouds'
 
 export default function useSwapper(gaslessWallet: GaslessWallet | undefined) {
   const swap = async (amount: number) => {
     if (!gaslessWallet) return
     const formattedAmount = BigNumber.from(amount).mul(BigNumber.from(10).pow(18))
-    console.log("🚀 ~ file: use-swapper.tsx:12 ~ swap ~ formattedAmount:", formattedAmount)
+    console.log(
+      '🚀 ~ file: use-swapper.tsx:12 ~ swap ~ formattedAmount:',
+      formattedAmount
+    )
 
     const CONTRACT_ABI = ['function swap(uint256, uint256)']
     let IContract = new utils.Interface(CONTRACT_ABI)

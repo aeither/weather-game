@@ -1,5 +1,5 @@
 import { formatTokenBalance } from '@my/api/src/utils'
-import { Button, H1, H3, Image, Paragraph, Text, XStack, YStack } from '@my/ui'
+import { Button, H1, H3, Image, Paragraph, Text, XStack, YStack, XGroup } from '@my/ui'
 import useGaslessOnboarding from 'app/lib/hooks/use-gasless-onboarding'
 import useSwapper, { TOKEN_A_ADDRESS, TOKEN_B_ADDRESS } from 'app/lib/hooks/use-swapper'
 import { BigNumber, utils } from 'ethers'
@@ -7,6 +7,7 @@ import ky from 'ky'
 import React, { useEffect } from 'react'
 import { useLink } from 'solito/link'
 import { trpc } from '../../lib/utils/trpc'
+import { Activity, Airplay, Cloud, CloudRain, Sun } from '@tamagui/lucide-icons'
 
 export function HomeScreen() {
   const userLinkProps = useLink({
@@ -109,6 +110,24 @@ export function HomeScreen() {
       </Button>
       <Button onPress={() => topUpSwapper(TOKEN_A_ADDRESS)}>Top Up Token A</Button>
       <Button onPress={() => topUpSwapper(TOKEN_B_ADDRESS)}>Top Up Token B</Button>
+
+      <XGroup size="$3" $gtSm={{ size: '$5' }}>
+        <XGroup.Item>
+          <Button size="$3" icon={Cloud}>
+            Clouds
+          </Button>
+        </XGroup.Item>
+        <XGroup.Item>
+          <Button size="$3" icon={CloudRain}>
+            Rain
+          </Button>
+        </XGroup.Item>
+        <XGroup.Item>
+          <Button size="$3" icon={Sun}>
+            Clear
+          </Button>
+        </XGroup.Item>
+      </XGroup>
       {/* END */}
 
       <H3 ta="center">Some Demos</H3>
