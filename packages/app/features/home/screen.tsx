@@ -1,89 +1,53 @@
 import { formatTokenBalance } from '@my/api/src/utils'
-import {
-  Button,
-  H1,
-  H3,
-  Paragraph,
-  Text,
-  XGroup,
-  XStack,
-  YStack,
-  Toast,
-  ToastProvider,
-  ToastImperativeProvider,
-  useToast,
-} from '@my/ui'
+import { Button, Card, H1, H2, Image, Paragraph, XGroup, XStack, YStack } from '@my/ui'
 import { Cloud, CloudRain, Sun } from '@tamagui/lucide-icons'
 import useGaslessOnboarding from 'app/lib/hooks/use-gasless-onboarding'
-import useWeatherGame, {
-  TOKEN_A_ADDRESS,
-  TOKEN_B_ADDRESS,
-} from 'app/lib/hooks/use-weather-game'
+import useWeatherGame from 'app/lib/hooks/use-weather-game'
 import ky from 'ky'
 import React, { useEffect } from 'react'
 import { trpc } from '../../lib/utils/trpc'
 
-const CurrentToast = () => {
-  const { currentToast } = useToast()
+function formatAddress(address) {
+  if (!address) {
+    return ''
+  }
 
-  if (!currentToast || currentToast.isHandledNatively) return null
-  return (
-    <Toast
-      key={currentToast.id}
-      duration={currentToast.duration}
-      enterStyle={{ opacity: 0, scale: 0.5, y: -25 }}
-      exitStyle={{ opacity: 0, scale: 1, y: -20 }}
-      y={0}
-      opacity={1}
-      scale={1}
-      animation="bouncy"
-    >
-      <YStack>
-        <Toast.Title>{currentToast.title}</Toast.Title>
-        {!!currentToast.message && (
-          <Toast.Description>{currentToast.message}</Toast.Description>
-        )}
-      </YStack>
-    </Toast>
-  )
-}
+  const prefix = address.slice(0, 6)
+  const suffix = address.slice(-4)
 
-const ToastButton = () => {
-  const toast = useToast()
-
-  return (
-    <Button
-      onPress={() => {
-        toast.show('Successfully saved!', {
-          message: "Don't worry, we've got your data.",
-        })
-      }}
-    >
-      Single Toast
-    </Button>
-  )
+  return `${prefix}...${suffix}`
 }
 
 export function HomeScreen() {
-  const { login, logout, walletAddress, contractAction, gaslessWallet } =
-    useGaslessOnboarding()
+  const { login, logout, walletAddress, gaslessWallet } = useGaslessOnboarding()
   const { swap, approveToken, mintToken, topUpSwapper, predict } =
     useWeatherGame(gaslessWallet)
-  const { data, isLoading, error } = trpc.entry.allTokens.useQuery({
-    address: walletAddress,
-  })
-  const createTask = trpc.entry.createTask.useMutation()
-  const [open, setOpen] = React.useState(false)
-  const timerRef = React.useRef(0)
+  const { data, isLoading, error } = trpc.entry.allTokens.useQuery(
+    {
+      address: walletAddress,
+    },
+    { enabled: !!walletAddress }
+  )
 
-  const fetchTest = async () => {
-    const json = await ky.get('https://relay.gelato.digital/oracles').json()
-    console.log('🚀 ~ file: screen.tsx:36 ~ fetchTest ~ json:', json)
-  }
+  const [countdown, setCountdown] = React.useState(0)
 
-  React.useEffect(() => {
-    return () => clearTimeout(timerRef.current)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date()
+      const minutes = now.getMinutes()
+      const seconds = now.getSeconds()
+      const remainingSeconds = (60 - minutes - 1) * 60 + (60 - seconds)
+      setCountdown(remainingSeconds)
+    }, 1000)
+
+    return () => clearInterval(interval)
   }, [])
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60)
+    const seconds = time % 60
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+  }
 
   useEffect(() => {
     console.log(data)
@@ -94,108 +58,102 @@ export function HomeScreen() {
   }
 
   return (
-    <ToastProvider>
-      <ToastImperativeProvider options={{}}>
-        <CurrentToast />
-        <YStack f={1} jc="center" ai="center" p="$4" space>
-          <YStack space="$4" maw={600} px="$3">
-            <XStack jc="center" ai="flex-end" fw="wrap" space="$2" mt="$-2">
-              <H1 ta="center" mt="$2">
-                Weather Forecaster Game
-              </H1>
-            </XStack>
-          </YStack>
+    <YStack f={1} jc="center" ai="center" p="$4" space>
+      <YStack space="$4" maw={600} px="$3" pt="$10">
+        <XStack jc="center" ai="flex-end" fw="wrap" space="$2" mt="$-2">
+          <H1 ta="center" mt="$2">
+            Weather Forecaster Game
+          </H1>
+        </XStack>
+      </YStack>
 
-          {/* START */}
-          {data?.map((token) => (
-            <>
-              <Text>{token.name}</Text>
-              <Text>{formatTokenBalance(token.balance)}</Text>
-            </>
-          ))}
-
-          <Button onPress={fetchTest}>Fetch gelato oracles</Button>
-          <Button onPress={contractAction}>gasless remix store action</Button>
-          <Button
-            onPress={async () => {
-              const { taskId, tx } = await createTask.mutateAsync()
-            }}
-          >
-            Create Task
-          </Button>
-
-          {walletAddress && (
-            <>
-              <Button onPress={() => mintToken(TOKEN_A_ADDRESS, walletAddress)}>
-                Mint Token A
-              </Button>
-              <Button onPress={() => mintToken(TOKEN_B_ADDRESS, walletAddress)}>
-                Mint Token B
-              </Button>
-            </>
-          )}
-          <Button onPress={() => approveToken(TOKEN_A_ADDRESS)}>Approve Token A</Button>
-          <Button onPress={() => approveToken(TOKEN_B_ADDRESS)}>Approve Token B</Button>
-          <Button
-            onPress={() => {
-              swap(20)
-            }}
-          >
-            Swap
-          </Button>
-          <Button onPress={() => topUpSwapper(TOKEN_A_ADDRESS)}>Top Up Token A</Button>
-          <Button onPress={() => topUpSwapper(TOKEN_B_ADDRESS)}>Top Up Token B</Button>
-
-          <ToastButton />
-
-          <XGroup size="$3" $gtSm={{ size: '$5' }}>
-            <XGroup.Item>
-              <Button
-                size="$3"
-                icon={Cloud}
-                onClick={() => {
-                  // predict('Clouds')
-                  setOpen(true)
-                }}
-              >
-                Clouds
-              </Button>
-            </XGroup.Item>
-            <XGroup.Item>
-              <Button size="$3" icon={CloudRain} onClick={() => predict('Rain')}>
-                Rain
-              </Button>
-            </XGroup.Item>
-            <XGroup.Item>
-              <Button size="$3" icon={Sun} onClick={() => predict('Clear')}>
-                Clear
-              </Button>
-            </XGroup.Item>
-          </XGroup>
-          {/* END */}
-
-          <H3 ta="center">Some Demos</H3>
-          <YStack p="$2">
-            <Paragraph>tRPC Query Demo</Paragraph>
-            {data?.map((entry) => (
-              <Paragraph opacity={0.5} key={entry.id}>
-                {entry.id}
+      <>
+        {walletAddress ? (
+          <>
+            <YStack space="$2" br={'$4'} bc="$gray3" p="$4" ai={'center'}>
+              <Paragraph size="$2" fow="800">
+                {formatAddress(walletAddress)}
               </Paragraph>
-            ))}
-          </YStack>
+              {data?.map((token) => (
+                <>
+                  <Paragraph>Reward Amount: </Paragraph>
+                  <Paragraph>{formatTokenBalance(token.balance)} WTG</Paragraph>
+                </>
+              ))}
+              <XStack space="$2" ai="center">
+                <Button onPress={logout} theme={'gray'}>
+                  logout
+                </Button>
+              </XStack>
+            </YStack>
+          </>
+        ) : (
+          <>
+            <YStack space="$2" br={'$4'} bc="$gray3" p="$4" ai={'center'}>
+              <Paragraph>{'Login with your email to get started'}</Paragraph>
+              <XStack space="$2" ai="center">
+                <Button onPress={login} theme={'yellow'}>
+                  login
+                </Button>
+              </XStack>
+            </YStack>
+          </>
+        )}
+      </>
 
-          <Text>{walletAddress || 'Connect'}</Text>
+      <XGroup size="$3" $gtSm={{ size: '$5' }}>
+        <XGroup.Item>
+          <Button
+            size="$3"
+            icon={Cloud}
+            onClick={() => {
+              predict('Clouds')
+            }}
+          >
+            Clouds
+          </Button>
+        </XGroup.Item>
+        <XGroup.Item>
+          <Button size="$3" icon={CloudRain} onClick={() => predict('Rain')}>
+            Rain
+          </Button>
+        </XGroup.Item>
+        <XGroup.Item>
+          <Button size="$3" icon={Sun} onClick={() => predict('Clear')}>
+            Clear
+          </Button>
+        </XGroup.Item>
+      </XGroup>
 
-          <XStack space ai="center">
-            <Button onPress={login} theme={'gray'}>
-              login
-            </Button>
-            <Button onPress={logout} theme={'gray'}>
-              logout
-            </Button>
-          </XStack>
-        </YStack>
-      </ToastImperativeProvider>
-    </ToastProvider>
+      <Card
+        theme="dark"
+        elevate
+        animation="bouncy"
+        hoverStyle={{ scale: 0.975 }}
+        bordered
+        size="$5"
+        w={250}
+        h={300}
+      >
+        <Card.Header padded>
+          <H2>London</H2>
+          <Paragraph theme="alt1">Current</Paragraph>
+        </Card.Header>
+        <Card.Footer padded>
+          <XStack f={1} />
+          <Button br="$10">{formatTime(countdown)}</Button>
+        </Card.Footer>
+        <Card.Background>
+          <Image
+            pos="absolute"
+            width={300}
+            height={300}
+            resizeMode="cover"
+            als="center"
+            src="https://images.unsplash.com/photo-1517758478390-c89333af4642?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1467&q=80"
+          />
+        </Card.Background>
+      </Card>
+    </YStack>
   )
 }
