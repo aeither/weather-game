@@ -2,8 +2,7 @@ import { formatTokenBalance } from '@my/api/src/utils'
 import { Button, Card, H1, H2, Image, Paragraph, XGroup, XStack, YStack } from '@my/ui'
 import { Cloud, CloudRain, Sun } from '@tamagui/lucide-icons'
 import useGaslessOnboarding from 'app/lib/hooks/use-gasless-onboarding'
-import useWeatherGame from 'app/lib/hooks/use-weather-game'
-import ky from 'ky'
+import useWeatherGame, { WeatherMain } from 'app/lib/hooks/use-weather-game'
 import React, { useEffect } from 'react'
 import { trpc } from '../../lib/utils/trpc'
 
@@ -20,16 +19,21 @@ function formatAddress(address) {
 
 export function HomeScreen() {
   const { login, logout, walletAddress, gaslessWallet } = useGaslessOnboarding()
-  const { swap, approveToken, mintToken, topUpSwapper, predict } =
-    useWeatherGame(gaslessWallet)
+  const { predict } = useWeatherGame(gaslessWallet)
+  const [countdown, setCountdown] = React.useState(0)
+  const [currentPrediction, setCurrentPrediction] = React.useState<WeatherMain>()
+
+  const weather = trpc.entry.weather.useQuery(undefined, {
+    cacheTime: Infinity,
+    staleTime: Infinity,
+  })
+
   const { data, isLoading, error } = trpc.entry.allTokens.useQuery(
     {
       address: walletAddress,
     },
     { enabled: !!walletAddress }
   )
-
-  const [countdown, setCountdown] = React.useState(0)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -101,59 +105,95 @@ export function HomeScreen() {
         )}
       </>
 
-      <XGroup size="$3" $gtSm={{ size: '$5' }}>
-        <XGroup.Item>
-          <Button
-            size="$3"
-            icon={Cloud}
-            onClick={() => {
-              predict('Clouds')
-            }}
-          >
-            Clouds
-          </Button>
-        </XGroup.Item>
-        <XGroup.Item>
-          <Button size="$3" icon={CloudRain} onClick={() => predict('Rain')}>
-            Rain
-          </Button>
-        </XGroup.Item>
-        <XGroup.Item>
-          <Button size="$3" icon={Sun} onClick={() => predict('Clear')}>
-            Clear
-          </Button>
-        </XGroup.Item>
-      </XGroup>
+      {currentPrediction ? (
+        <Button size="$3" icon={Cloud} disabled>
+          {currentPrediction}
+        </Button>
+      ) : (
+        <XGroup size="$3" $gtSm={{ size: '$5' }}>
+          <XGroup.Item>
+            <Button
+              size="$3"
+              icon={Cloud}
+              disabled={walletAddress == undefined}
+              onClick={async () => {
+                await predict('Clouds')
+                setCurrentPrediction('Clouds')
+              }}
+            >
+              Clouds
+            </Button>
+          </XGroup.Item>
+          <XGroup.Item>
+            <Button
+              size="$3"
+              icon={CloudRain}
+              disabled={walletAddress == undefined}
+              onClick={async () => {
+                await predict('Rain')
+                setCurrentPrediction('Rain')
+              }}
+            >
+              Rain
+            </Button>
+          </XGroup.Item>
+          <XGroup.Item>
+            <Button
+              size="$3"
+              icon={Sun}
+              disabled={walletAddress == undefined}
+              onClick={async () => {
+                await predict('Clear')
+                setCurrentPrediction('Clear')
+              }}
+            >
+              Clear
+            </Button>
+          </XGroup.Item>
+        </XGroup>
+      )}
 
-      <Card
-        theme="dark"
-        elevate
-        animation="bouncy"
-        hoverStyle={{ scale: 0.975 }}
-        bordered
-        size="$5"
-        w={250}
-        h={300}
-      >
-        <Card.Header padded>
-          <H2>London</H2>
-          <Paragraph theme="alt1">Current</Paragraph>
-        </Card.Header>
-        <Card.Footer padded>
-          <XStack f={1} />
-          <Button br="$10">{formatTime(countdown)}</Button>
-        </Card.Footer>
-        <Card.Background>
-          <Image
-            pos="absolute"
-            width={300}
-            height={300}
-            resizeMode="cover"
-            als="center"
-            src="https://images.unsplash.com/photo-1517758478390-c89333af4642?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1467&q=80"
-          />
-        </Card.Background>
-      </Card>
+      {weather.data && (
+        <Card
+          theme="dark"
+          elevate
+          animation="bouncy"
+          hoverStyle={{ scale: 0.975 }}
+          bordered
+          size="$5"
+          w={250}
+          h={300}
+        >
+          <Card.Header padded>
+            <H2 textShadowColor={'$gray10'} textShadowOffset={{ height: 2, width: 2 }}>
+              {weather.data.name}
+            </H2>
+            <Paragraph theme="alt2">{weather.data.weather[0].main}</Paragraph>
+          </Card.Header>
+          <Card.Footer padded>
+            <XStack f={1} />
+            <Button br="$10">{formatTime(countdown)}</Button>
+          </Card.Footer>
+          <Card.Background>
+            <Image
+              pos="absolute"
+              width={300}
+              height={300}
+              resizeMode="cover"
+              als="center"
+              src={
+                weather.data.weather[0].main === 'Clouds'
+                  ? 'https://images.unsplash.com/photo-1469365556835-3da3db4c253b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80'
+                  : weather.data.weather[0].main === 'Clear'
+                  ? 'https://images.unsplash.com/photo-1517758478390-c89333af4642?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1467&q=80'
+                  : weather.data.weather[0].main === 'Rain'
+                  ? 'https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80'
+                  : 'https://images.unsplash.com/photo-1517758478390-c89333af4642?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1467&q=80'
+              }
+            />
+          </Card.Background>
+        </Card>
+      )}
     </YStack>
   )
 }

@@ -6,7 +6,7 @@ export const TOKEN_B_ADDRESS = '0x002A1Ac1E59D616585a9Fc0913e5b06a9DbB9d6C'
 const SwapperAddress = '0x0CA03a3560A305fEd2803B336A6D5C8Ccff12891'
 const WeatherAddress = '0xB676A1Ef4b6FFd2f2b5B88D197206c98bD1d8df6'
 
-type WeatherMain =
+export type WeatherMain =
   | 'Thunderstorm'
   | 'Drizzle'
   | 'Rain'
