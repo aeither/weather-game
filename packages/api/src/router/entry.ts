@@ -1,6 +1,7 @@
 //grab the images for the corresponding user
 import { AutomateSDK } from '@gelatonetwork/automate-sdk'
 import { ethers } from 'ethers'
+import { z } from 'zod'
 import { publicProcedure, router } from '../trpc'
 
 if (!process.env.PROVIDER_URL) throw new Error('PROVIDER_URL not found')
@@ -17,23 +18,31 @@ export const entryRouter = router({
     return ctx.prisma.entry.findMany()
   }),
 
-  allTokens: publicProcedure.query(({ ctx }) => {
-    const data = fetch(
-      'https://deep-index.moralis.io/api/v2/0x51e07f2835c8a53035C23Ab674eaE57BF1E21Fa2/erc20?chain=mumbai',
-      {
-        headers: {
-          Accept: 'application/json',
-          'X-Api-Key': MORALIS_API_TOKEN,
-        },
-      }
-    ).then((r) => r.json())
+  allTokens: publicProcedure
+    .input(
+      z.object({
+        address: z.string().optional(),
+      })
+    )
+    .query(({ ctx, input }) => {
+      if (!input.address) return undefined
 
-    return data
-  }),
+      const data = fetch(
+        `https://deep-index.moralis.io/api/v2/${input.address}/erc20?chain=mumbai`,
+        {
+          headers: {
+            Accept: 'application/json',
+            'X-Api-Key': MORALIS_API_TOKEN,
+          },
+        }
+      ).then((r) => r.json())
+
+      return data
+    }),
 
   createTask: publicProcedure
     // .input(
-    //   z.object({90-[=9p0-[]]0[p-]
+    //   z.object({
     //     entryDay: z.date(),
     //     urlFrontPhotoThumbnail: z.string(),
     //     urlFrontPhotoHD: z.string(),
