@@ -1,5 +1,5 @@
 {
-  "name": "myapp-monorepo",
+  "name": "weather-game",
   "private": true,
   "workspaces": [
     "apps/*",
