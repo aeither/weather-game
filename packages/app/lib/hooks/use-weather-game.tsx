@@ -4,8 +4,7 @@ import { BigNumber, ethers, utils } from 'ethers'
 export const TOKEN_A_ADDRESS = '0xF15c5A73803716bA7312c84146621Da20F086cF1'
 export const TOKEN_B_ADDRESS = '0x002A1Ac1E59D616585a9Fc0913e5b06a9DbB9d6C'
 const SwapperAddress = '0x0CA03a3560A305fEd2803B336A6D5C8Ccff12891'
-const WeatherAddress = '0xF15c5A73803716bA7312c84146621Da20F086cF1'
-const WeatherAddress2 = '0x752504FCF6960F54e5b942caa530CB4Ac62E7768'
+const WeatherAddress = '0xB676A1Ef4b6FFd2f2b5B88D197206c98bD1d8df6'
 
 type WeatherMain =
   | 'Thunderstorm'
@@ -24,7 +23,18 @@ type WeatherMain =
   | 'Clear'
   | 'Clouds'
 
-export default function useSwapper(gaslessWallet: GaslessWallet | undefined) {
+export default function useWeatherGame(gaslessWallet: GaslessWallet | undefined) {
+  const predict = async (condition: WeatherMain) => {
+    if (!gaslessWallet) return
+
+    const CONTRACT_ABI = ['function predict(string)']
+    let IContract = new utils.Interface(CONTRACT_ABI)
+    let txData = IContract.encodeFunctionData('predict', [condition])
+    const { taskId } = await gaslessWallet.sponsorTransaction(WeatherAddress, txData)
+
+    console.log(`https://relay.gelato.digital/tasks/status/${taskId}`)
+  }
+
   const swap = async (amount: number) => {
     if (!gaslessWallet) return
     const formattedAmount = BigNumber.from(amount).mul(BigNumber.from(10).pow(18))
@@ -40,6 +50,7 @@ export default function useSwapper(gaslessWallet: GaslessWallet | undefined) {
 
     console.log(`https://relay.gelato.digital/tasks/status/${taskId}`)
   }
+
   const topUpSwapper = async (tokenAddress: string) => {
     if (!gaslessWallet) return
     const amount = BigNumber.from(200).mul(BigNumber.from(10).pow(18))
@@ -88,5 +99,6 @@ export default function useSwapper(gaslessWallet: GaslessWallet | undefined) {
     mintToken,
     approveToken,
     topUpSwapper,
+    predict,
   }
 }

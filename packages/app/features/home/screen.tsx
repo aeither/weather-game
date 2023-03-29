@@ -1,7 +1,10 @@
 import { formatTokenBalance } from '@my/api/src/utils'
 import { Button, H1, H3, Image, Paragraph, Text, XStack, YStack, XGroup } from '@my/ui'
 import useGaslessOnboarding from 'app/lib/hooks/use-gasless-onboarding'
-import useSwapper, { TOKEN_A_ADDRESS, TOKEN_B_ADDRESS } from 'app/lib/hooks/use-swapper'
+import useWeatherGame, {
+  TOKEN_A_ADDRESS,
+  TOKEN_B_ADDRESS,
+} from 'app/lib/hooks/use-weather-game'
 import { BigNumber, utils } from 'ethers'
 import ky from 'ky'
 import React, { useEffect } from 'react'
@@ -16,7 +19,8 @@ export function HomeScreen() {
 
   const { login, logout, walletAddress, contractAction, gaslessWallet } =
     useGaslessOnboarding()
-  const { swap, approveToken, mintToken, topUpSwapper } = useSwapper(gaslessWallet)
+  const { swap, approveToken, mintToken, topUpSwapper, predict } =
+    useWeatherGame(gaslessWallet)
   const { data, isLoading, error } = trpc.entry.allTokens.useQuery()
   console.log('🚀 ~ file: screen.tsx:20 ~ HomeScreen ~ data:', data)
   const createTask = trpc.entry.createTask.useMutation()
@@ -106,17 +110,17 @@ export function HomeScreen() {
 
       <XGroup size="$3" $gtSm={{ size: '$5' }}>
         <XGroup.Item>
-          <Button size="$3" icon={Cloud}>
+          <Button size="$3" icon={Cloud} onClick={() => predict('Clouds')}>
             Clouds
           </Button>
         </XGroup.Item>
         <XGroup.Item>
-          <Button size="$3" icon={CloudRain}>
+          <Button size="$3" icon={CloudRain} onClick={() => predict('Rain')}>
             Rain
           </Button>
         </XGroup.Item>
         <XGroup.Item>
-          <Button size="$3" icon={Sun}>
+          <Button size="$3" icon={Sun} onClick={() => predict('Clear')}>
             Clear
           </Button>
         </XGroup.Item>
