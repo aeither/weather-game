@@ -12,7 +12,6 @@ contract Weather {
     uint256 public playerCounter;
 
     event ConditionUpdated(uint256 indexed timeStamp, string condition);
-    event RewardTransferred(address indexed recipient, uint256 amount);
 
     constructor(address tokenAddress) {
         token = IERC20(tokenAddress);
@@ -42,9 +41,13 @@ contract Weather {
     }
 
     function rewardPrediction() external {
-        uint256 winnersCounter;
+        require(playerCounter > 0, "There is no plays.");
 
-        for (uint256 i = 0; i < playerCounter; i++) {
+        uint256 localCounter = playerCounter;
+        playerCounter = 0;
+
+        uint256 winnersCounter;
+        for (uint256 i = 0; i < localCounter; i++) {
             if (
                 keccak256(abi.encodePacked(conditions[i])) ==
                 keccak256(abi.encodePacked(condition))
@@ -53,19 +56,18 @@ contract Weather {
             }
         }
 
-        uint256 totalRewardAmount = 100 * 10**18;
+        require(winnersCounter > 0, "There is no winners.");
+
+        uint256 totalRewardAmount = 100 * 10 ** 18;
         uint256 tokensPerWinner = totalRewardAmount / winnersCounter;
 
-        for (uint256 i = 0; i < playerCounter; i++) {
+        for (uint256 i = 0; i < localCounter; i++) {
             if (
                 keccak256(abi.encodePacked(conditions[i])) ==
                 keccak256(abi.encodePacked(condition))
             ) {
                 token.transfer(players[i], tokensPerWinner);
-
-                emit RewardTransferred(msg.sender, tokensPerWinner);
             }
         }
-        playerCounter = 0;
     }
 }

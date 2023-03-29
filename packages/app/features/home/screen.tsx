@@ -1,28 +1,21 @@
 import { formatTokenBalance } from '@my/api/src/utils'
-import { Button, H1, H3, Image, Paragraph, Text, XStack, YStack, XGroup } from '@my/ui'
+import { Button, H1, H3, Paragraph, Text, XGroup, XStack, YStack } from '@my/ui'
+import { Cloud, CloudRain, Sun } from '@tamagui/lucide-icons'
 import useGaslessOnboarding from 'app/lib/hooks/use-gasless-onboarding'
 import useWeatherGame, {
   TOKEN_A_ADDRESS,
   TOKEN_B_ADDRESS,
 } from 'app/lib/hooks/use-weather-game'
-import { BigNumber, utils } from 'ethers'
 import ky from 'ky'
 import React, { useEffect } from 'react'
-import { useLink } from 'solito/link'
 import { trpc } from '../../lib/utils/trpc'
-import { Activity, Airplay, Cloud, CloudRain, Sun } from '@tamagui/lucide-icons'
 
 export function HomeScreen() {
-  const userLinkProps = useLink({
-    href: '/user/nate',
-  })
-
   const { login, logout, walletAddress, contractAction, gaslessWallet } =
     useGaslessOnboarding()
   const { swap, approveToken, mintToken, topUpSwapper, predict } =
     useWeatherGame(gaslessWallet)
   const { data, isLoading, error } = trpc.entry.allTokens.useQuery()
-  console.log('🚀 ~ file: screen.tsx:20 ~ HomeScreen ~ data:', data)
   const createTask = trpc.entry.createTask.useMutation()
 
   // const { data: tokenAmounts, isLoading: isLoadingTokenAmounts } = useContractReads({
@@ -43,7 +36,6 @@ export function HomeScreen() {
   //     },
   //   ],
   // })
-  console.log('🚀 ~ file: screen.tsx:39 ~ HomeScreen ~ tokenAmounts:', data)
 
   const fetchTest = async () => {
     const json = await ky.get('https://relay.gelato.digital/oracles').json()
@@ -136,12 +128,6 @@ export function HomeScreen() {
           </Paragraph>
         ))}
       </YStack>
-
-      <XStack space>
-        <Button {...userLinkProps} theme={'gray'}>
-          User Page(Routing)
-        </Button>
-      </XStack>
 
       <Text>{walletAddress || 'Connect'}</Text>
 
